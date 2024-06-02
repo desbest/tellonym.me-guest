@@ -191,6 +191,8 @@ Image: https://tellonym.me/avgx.wvmx/answer/4196788015
             return;
         }
 
+
+
         window.clearInterval(initInterval);
 
         ul = ul.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
@@ -200,6 +202,7 @@ Image: https://tellonym.me/avgx.wvmx/answer/4196788015
         [...ul.childNodes].splice(1).forEach(item => item.remove()); // Remove initial loaded tells
 
         user = window.location.pathname.split("/")[1];
+
 
         await loadTells();
 
@@ -221,7 +224,7 @@ Image: https://tellonym.me/avgx.wvmx/answer/4196788015
 
         url = window.location.origin + window.location.pathname;
 
-        if (["/search", "/login"].includes(window.location.pathname)) { // Not a user profile
+        if (["/search", "/login", "/tells", "/notifications", "/search"].includes(window.location.pathname)) { // Not a user profile
             return;
         }
 
@@ -230,6 +233,8 @@ Image: https://tellonym.me/avgx.wvmx/answer/4196788015
         scrollLoading = undefined;
         initTimeout = 0;
         scrollEnded = undefined;
+
+
         initInterval = window.setInterval(init, 250);
 
     }
