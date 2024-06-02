@@ -13,6 +13,8 @@
 // @require         https://cdn.jsdelivr.net/npm/axios@0.24.0/dist/axios.min.js
 // @require         https://cdn.jsdelivr.net/npm/luxon@2.3.0/build/global/luxon.min.js
 // @grant           none
+// @downloadURL https://update.greasyfork.org/scripts/438008/Tellonymme%20Guest.user.js
+// @updateURL https://update.greasyfork.org/scripts/438008/Tellonymme%20Guest.meta.js
 // ==/UserScript==
 
 /*
@@ -24,7 +26,9 @@ Image: https://tellonym.me/avgx.wvmx/answer/4196788015
 
 (function () {
     'use strict';
-    let initInterval, ul, user, pos, scrollLoading, initTimeout, scrollEnded, url;
+    let initInterval, ul, user, pos, scrollLoading, initTimeout, scrollEnded, url
+    let myavatar, howmanymisses;
+    let myavatarhistory = [];
 
     async function loadTells() {
         let data = await axios.get(`https://api.tellonym.me/profiles/name/${user}?limit=25&pos=${pos}`);
@@ -154,6 +158,11 @@ Image: https://tellonym.me/avgx.wvmx/answer/4196788015
     }
 
     async function onScroll() { // Load new tells, if near page end
+
+        myavatar = document.querySelectorAll('img[alt=avatar]');
+        if(myavatar.length === 0){ myavatarhistory.push("nothing"); } else { myavatarhistory.push("something"); }
+        howmanymisses = myavatarhistory.filter(x => x == "nothing").length;
+
         const last10 = ul.childNodes[ul.childNodes.length - 10]; // 10th last child
         if (last10.getBoundingClientRect().top <= document.body.clientHeight && !scrollLoading && !scrollEnded) {
             scrollLoading = true;
@@ -165,8 +174,10 @@ Image: https://tellonym.me/avgx.wvmx/answer/4196788015
     }
 
     async function init() {
+
         ul = [...document.querySelectorAll("img[src^='https://user']")].reverse()[0]; // Last custom profile picture in tell
         ul = ul || [...document.querySelectorAll("svg[height='38']")].reverse()[0]?.parentNode; // Last generic profile picture in tell
+
 
         if (!ul) {
             initTimeout++;
@@ -179,6 +190,8 @@ Image: https://tellonym.me/avgx.wvmx/answer/4196788015
             return;
         }
 
+
+
         window.clearInterval(initInterval);
 
         ul = ul.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
@@ -189,14 +202,18 @@ Image: https://tellonym.me/avgx.wvmx/answer/4196788015
 
         user = window.location.pathname.split("/")[1];
 
+
         await loadTells();
 
         window.addEventListener("scroll", onScroll);
 
+        if(howmanymisses > 2){
         for (let i = 0; i < 20; i++) {
             document.querySelector("img[src*=appstore]")?.parentNode.parentNode.parentNode.parentNode.parentNode.remove(); // Remove Appstore Banner
             await new Promise(r => setTimeout(r, 500));
         }
+        }
+
     }
 
     function checkNavigate() {
@@ -216,7 +233,9 @@ Image: https://tellonym.me/avgx.wvmx/answer/4196788015
         initTimeout = 0;
         scrollEnded = undefined;
 
+
         initInterval = window.setInterval(init, 250);
+
     }
 
     checkNavigate();
